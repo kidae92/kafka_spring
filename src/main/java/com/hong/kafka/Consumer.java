@@ -8,7 +8,9 @@ public class Consumer {
     @KafkaListener(id= "hong-id", topics = "test")
     public void listen(String message){
         System.out.println("=======");
+        System.out.println("=======");
         System.out.println(message);
+        System.out.println("=======");
         System.out.println("=======");
 
     }
