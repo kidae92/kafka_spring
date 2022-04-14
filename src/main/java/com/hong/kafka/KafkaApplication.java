@@ -1,10 +1,18 @@
 package com.hong.kafka;
 
+import org.apache.kafka.clients.admin.Admin;
+import org.apache.kafka.clients.admin.AdminClient;
+import org.apache.kafka.clients.admin.TopicDescription;
+import org.apache.kafka.clients.admin.TopicListing;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.kafka.core.KafkaTemplate;
+
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Map;
 
 @SpringBootApplication
 public class KafkaApplication {
@@ -14,11 +22,22 @@ public class KafkaApplication {
     }
 
     @Bean
-    public ApplicationRunner runner(KafkaTemplate<String, String> KafkaTemplate) {
+    public ApplicationRunner runner(AdminClient adminClient) {
         return args -> {
-          KafkaTemplate.send("test", "test-message");
-        };
+            Map<String, TopicListing> topics = adminClient.listTopics().namesToListings().get();
+            for (String topicName: topics.keySet()) {
+                TopicListing topicListing = topics.get(topicName);
+                System.out.println(topicListing);
 
+                Map<String, TopicDescription> descriptions = adminClient.describeTopics(Collections.singleton(topicName)).all().get();
+                System.out.println(descriptions);
+
+//                adminClient.deleteTopics(Collections.singleton(topicName));
+            }
+
+
+        };
     }
 
 }
+
